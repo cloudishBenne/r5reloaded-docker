@@ -1,4 +1,4 @@
-FROM ubuntu:jammy
+FROM ubuntu:25.04
 LABEL org.opencontainers.image.authors="radical@radical.fun" version="2.0"
 
 # Add new user
@@ -7,21 +7,22 @@ RUN useradd -m r5reloaded
 
 # Copy
 
-COPY --chown=r5reloaded:r5reloaded ./server/ ./winehq.key /home/r5reloaded/server/
+COPY --chown=r5reloaded:r5reloaded ./server/ /home/r5reloaded/server/
 
 # Install dependencies
-
-RUN dpkg --add-architecture i386 && \
-    apt update -y && \
-    apt upgrade -y && \
-    apt install software-properties-common gnupg -y && \
-    cat /home/r5reloaded/server/winehq.key | apt-key add - && \
-    apt-add-repository 'deb https://dl.winehq.org/wine-builds/ubuntu/ jammy main' && \
-    apt update -y && \
-    apt install winehq-stable wine-stable wine-stable-amd64 wine-stable-i386 -y && \
-    apt purge software-properties-common gnupg -y && \
-    apt autoremove -y && \
-    rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/* /home/r5reloaded/server/winehq.key
+ARG DEBIAN_FRONTEND=noninteractive
+RUN dpkg --add-architecture i386 \
+    && apt-get update -y \
+    && apt-get upgrade -y \
+    && apt-get install --no-install-recommends gnupg wget -y \
+    && mkdir -pm755 /etc/apt/keyrings \
+    && wget -O - https://dl.winehq.org/wine-builds/winehq.key \
+        | gpg --dearmor -o /etc/apt/keyrings/winehq-archive.key - \
+    && wget -NP /etc/apt/sources.list.d/ https://dl.winehq.org/wine-builds/ubuntu/dists/plucky/winehq-plucky.sources \
+    && apt-get update -y \
+    && apt-get install --install-recommends winehq-stable -y \
+    && apt-get purge --auto-remove -y gnupg wget \
+    && rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/*
 
 # Swap to new user
 
@@ -45,5 +46,5 @@ ENV ARGS="" \
     HOME=/home/r5reloaded \
     PORT=37000
 
-ENTRYPOINT wine r5apex_ds.exe -noconsole -port ${PORT} +launchplaylist "${PLAYLIST}" +hostname "${NAME}" ${ARGS}
+ENTRYPOINT ["sh", "-c", "exec wine r5apex_ds.exe -noconsole -port ${PORT} +launchplaylist \"${PLAYLIST}\" +hostname \"${NAME}\" ${ARGS}"]
 
