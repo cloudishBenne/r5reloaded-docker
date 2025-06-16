@@ -12,15 +12,15 @@ COPY --chown=r5reloaded:r5reloaded ./server/ ./winehq.key /home/r5reloaded/serve
 # Install dependencies
 ARG DEBIAN_FRONTEND=noninteractive
 RUN dpkg --add-architecture i386 && \
-    apt update -y && \
-    apt upgrade -y && \
-    apt install software-properties-common gnupg -y && \
+    apt-get update -y && \
+    apt-get upgrade -y && \
+    apt-get install software-properties-common gnupg -y && \
     cat /home/r5reloaded/server/winehq.key | apt-key add - && \
     apt-add-repository 'deb https://dl.winehq.org/wine-builds/ubuntu/ jammy main' && \
-    apt update -y && \
-    apt install winehq-stable wine-stable wine-stable-amd64 wine-stable-i386 -y && \
-    apt purge software-properties-common gnupg -y && \
-    apt autoremove -y && \
+    apt-get update -y && \
+    apt-get install winehq-stable wine-stable wine-stable-amd64 wine-stable-i386 -y && \
+    apt-get purge software-properties-common gnupg -y && \
+    apt-get autoremove -y && \
     rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/* /home/r5reloaded/server/winehq.key
 
 # Swap to new user
