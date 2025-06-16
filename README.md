@@ -1,5 +1,5 @@
 # R5Reloaded Docker
-This runs R5Reloaded from a docker container, this makes setting up servers a bit easier
+This repository runs R5Reloaded inside a Docker container, making server setup easier.
 
 ## Setup
 
