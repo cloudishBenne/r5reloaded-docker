@@ -10,7 +10,7 @@ RUN useradd -m r5reloaded
 COPY --chown=r5reloaded:r5reloaded ./server/ ./winehq.key /home/r5reloaded/server/
 
 # Install dependencies
-
+ARG DEBIAN_FRONTEND=noninteractive
 RUN dpkg --add-architecture i386 && \
     apt update -y && \
     apt upgrade -y && \
