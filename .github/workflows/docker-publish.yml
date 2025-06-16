@@ -51,8 +51,6 @@ jobs:
       - name: Extract server release
         run: mkdir server && cd server && 7z x ../server.7z && cd ..
 
-      - name: Download winehq key file
-        run: wget https://dl.winehq.org/wine-builds/winehq.key
 
       # Install the cosign tool except on PR
       # https://github.com/sigstore/cosign-installer
